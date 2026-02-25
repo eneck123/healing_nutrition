@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthenticationService {
-  final String apiUrl = "https://healing-nutrition-plan.com/";
+  final String apiUrl = "https://healing-nutrition-plan.pixeluxt.com/";
   static const String loginUrl = 'api/login';
   static const String tokenKey = 'auth_token';
   final NavigationService _navigationService;

@@ -17,7 +17,7 @@
 class Config {
  //static const String baseUrl = 'http://localhost:8000'; // Remplacez par l'URL de votre backend
   //static const String baseUrl = 'https://Application_Flutter_1/api/';
-  static const String baseUrl = 'http://192.168.43.216:8000/api'; 
+  //static const String baseUrl = 'http://192.168.43.216:8000/api'; 
    
 
   // Vous pouvez également ajouter d'autres configurations si nécessaire

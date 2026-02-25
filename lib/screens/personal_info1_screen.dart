@@ -44,7 +44,7 @@ class _PersonalInfo1ScreenState extends State<PersonalInfo1Screen> {
       _missingFields.add('prénom');
     }
     if (_ageController.text.isEmpty || int.tryParse(_ageController.text) == null || int.parse(_ageController.text) < 16) {
-      _missingFields.add('âge (doit être au moins de 16 ans)');
+      _missingFields.add('âge (doit être au moins de 18 ans)');
     }
     if (_poidsController.text.isEmpty) {
       _missingFields.add('poids');

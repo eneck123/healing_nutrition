@@ -145,7 +145,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
         return;
       }
 
-      final url = Uri.parse('https://healing-nutrition-plan.com/api/admin/users/get-list');
+      final url = Uri.parse('https://healing-nutrition-plan.pixeluxt.com/api/admin/users/get-list');
 
       final response = await http.get(
         url,
@@ -195,7 +195,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
         return;
       }
 
-      final url = Uri.parse('https://healing-nutrition-plan.com/api/admin/users/delete/${user.id}');
+      final url = Uri.parse('https://healing-nutrition-plan.pixeluxt.com/api/admin/users/delete/${user.id}');
 
       // Utilisation de POST pour la suppression
       final response = await http.post(

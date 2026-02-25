@@ -40,7 +40,7 @@ class _PasswordModifyState extends State<PasswordModify> {
       return;
     }
 
-    final Uri uri = Uri.parse('https://healing-nutrition-plan.com/api/auth/forgot-password');
+    final Uri uri = Uri.parse('https://healing-nutrition-plan.pixeluxt.com/api/auth/forgot-password');
     print("URL complète : $uri");
 
     try {

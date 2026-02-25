@@ -61,7 +61,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       return;
     }
 
-    final Uri uri = Uri.parse('https://healing-nutrition-plan.com/api/auth/reset-password');
+    final Uri uri = Uri.parse('https://healing-nutrition-plan.pixeluxt.com/api/auth/reset-password');
     try {
       final response = await http.post(
         uri,

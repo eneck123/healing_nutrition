@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class UserLoginService {
-  final String apiUrl = "https://healing-nutrition-plan.com/";
+  final String apiUrl = "https://healing-nutrition-plan.pixeluxt.com/";
   static const String loginUrl = 'api/login';
   static const String tokenKey = 'auth_token';
   static const String roleKey = 'user_role';

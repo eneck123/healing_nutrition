@@ -2,7 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class UserRegistrationService {
-  final String apiUrl = "https://healing-nutrition-plan.com/";
+  final String apiUrl = "https://healing-nutrition-plan.pixeluxt.com/";
   static const String registerUrl = 'api/register';
 
   Future<Map<String, dynamic>> registerUser({

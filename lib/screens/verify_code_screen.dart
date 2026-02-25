@@ -28,7 +28,7 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
       return;
     }
 
-    final Uri uri = Uri.parse('https://healing-nutrition-plan.com/api/auth/forgot-password/verify');
+    final Uri uri = Uri.parse('https://healing-nutrition-plan.pixeluxt.com/api/auth/forgot-password/verify');
     print("URL complète : $uri"); // Debug URL
 
     try {
