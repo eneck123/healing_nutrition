@@ -259,7 +259,7 @@ class _AccueilMobileState extends State<AccueilMobile> {
 }
 
 class AuthenticationService {
-  final String apiUrl = "https://healing-nutrition-plan.com/";
+  final String apiUrl = "https://healing-nutrition-plan.pixeluxt.com/";
 
   Future<Map<String, dynamic>> sendObesityChoice(
     String typeMaladieChronique, {
