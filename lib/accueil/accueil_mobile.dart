@@ -51,7 +51,8 @@ class _AccueilMobileState extends State<AccueilMobile> {
   }
 
   // ────────────────────────────────────────────────────────────
-  // ÉTAPE 1 : POST – Associer le type d'obésité à l'utilisateur
+  // POST – Associer le type d'obésité à l'utilisateur
+  // puis naviguer vers la page d'information e-mail
   // ────────────────────────────────────────────────────────────
   Future<void> _handleObesityChoice() async {
     if (_selectedObesityType == null) return;
@@ -60,18 +61,18 @@ class _AccueilMobileState extends State<AccueilMobile> {
 
     final authService = AuthenticationService();
 
-    // ── POST : envoi du type d'obésité ──
     final obesityResult = await authService.sendObesityChoice(
       _selectedObesityType!,
       token: _token,
     );
+
+    setState(() => _isLoading = false);
 
     if (obesityResult['success'] != true) {
       _showSnackBar(
         obesityResult['message'] ?? 'Erreur lors de l\'envoi du type d\'obésité.',
         color: Colors.red,
       );
-      setState(() => _isLoading = false);
       return;
     }
 
@@ -80,37 +81,13 @@ class _AccueilMobileState extends State<AccueilMobile> {
       color: Colors.green,
     );
 
-    // ────────────────────────────────────────────────────────────
-    // ÉTAPE 2 : GET – Récupérer les questions liées au type choisi
-    // ────────────────────────────────────────────────────────────
-    final questionsResult = await authService.fetchQuestions(
-      _selectedObesityType!,
-      token: _token,
-    );
-
-    setState(() => _isLoading = false);
-
-    if (questionsResult['success'] != true ||
-        questionsResult['questions'] == null) {
-      _showSnackBar(
-        questionsResult['message'] ?? 'Impossible de charger les questions.',
-        color: Colors.red,
-      );
-      return;
-    }
-
-    _showSnackBar(
-      questionsResult['message'] ?? 'Questions chargées avec succès !',
-      color: Colors.green,
-    );
-
     if (!mounted) return;
+
+    // ── Navigation vers la page d'information e-mail ──
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => QuestionnaireDynamiquePage(
+        builder: (_) => EmailInfoPage(
           obesityType: _selectedObesityType!,
-          questions: List<Map<String, dynamic>>.from(
-              questionsResult['questions']),
           token: _token,
         ),
       ),
@@ -182,11 +159,6 @@ class _AccueilMobileState extends State<AccueilMobile> {
         _buildObesityTypeOption(
           'obésité sévère',
           'Connue grâce à un Indice de Masse Corporelle (IMC) entre 35 et 39,9 kg/m².',
-        ),
-        const SizedBox(height: 30),
-        _buildObesityTypeOption(
-          'obésité morbide',
-          'Connue grâce à un Indice de Masse Corporelle (IMC) de 40 kg/m² ou plus.',
         ),
         const SizedBox(height: 40),
         ElevatedButton(
@@ -279,6 +251,194 @@ class _AccueilMobileState extends State<AccueilMobile> {
 }
 
 // ─────────────────────────────────────────────
+// Page d'information – Consulter son e-mail
+// ─────────────────────────────────────────────
+
+class EmailInfoPage extends StatefulWidget {
+  final String obesityType;
+  final String? token;
+
+  const EmailInfoPage({
+    super.key,
+    required this.obesityType,
+    this.token,
+  });
+
+  @override
+  State<EmailInfoPage> createState() => _EmailInfoPageState();
+}
+
+class _EmailInfoPageState extends State<EmailInfoPage> {
+  bool _isLoading = false;
+
+  // ── Affichage d'un SnackBar coloré ──
+  void _showSnackBar(String message, {required Color color}) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: color,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
+  // ────────────────────────────────────────────────────────────
+  // GET – Récupérer les questions puis naviguer vers le questionnaire
+  // ────────────────────────────────────────────────────────────
+  Future<void> _handleContinue() async {
+    setState(() => _isLoading = true);
+
+    final authService = AuthenticationService();
+
+    final questionsResult = await authService.fetchQuestions(
+      widget.obesityType,
+      token: widget.token,
+    );
+
+    setState(() => _isLoading = false);
+
+    if (questionsResult['success'] != true ||
+        questionsResult['questions'] == null) {
+      _showSnackBar(
+        questionsResult['message'] ?? 'Impossible de charger les questions.',
+        color: Colors.red,
+      );
+      return;
+    }
+
+    _showSnackBar(
+      questionsResult['message'] ?? 'Questions chargées avec succès !',
+      color: Colors.green,
+    );
+
+    if (!mounted) return;
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => QuestionnaireDynamiquePage(
+          obesityType: widget.obesityType,
+          questions: List<Map<String, dynamic>>.from(
+              questionsResult['questions']),
+          token: widget.token,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'healingnutrition',
+          style: TextStyle(
+            color: Colors.green,
+            fontFamily: 'Daughter of Fortune',
+            fontSize: 30,
+          ),
+        ),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+      ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 40),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // ── Icône e-mail ──
+              const Icon(
+                Icons.mark_email_unread_outlined,
+                size: 80,
+                color: Colors.green,
+              ),
+              const SizedBox(height: 32),
+
+              // ── Titre ──
+              const Text(
+                'Consultez votre boîte e-mail',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+
+              // ── Texte informatif ──
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.green.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.green.withOpacity(0.3)),
+                ),
+                child: const Text(
+                  'Un e-mail vous a été envoyé avec des informations importantes concernant votre suivi nutritionnel personnalisé.\n\n'
+                  'Veuillez consulter votre boîte de réception (et vos spams si nécessaire) avant de continuer.\n\n'
+                  'Lorsque vous êtes prêt(e), cliquez sur "Continuer" pour passer au questionnaire.',
+                  style: TextStyle(fontSize: 15, height: 1.6),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const SizedBox(height: 40),
+
+              // ── Bouton Continuer ──
+              ElevatedButton(
+                onPressed: _isLoading ? null : _handleContinue,
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.green,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                ),
+                child: _isLoading
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                            color: Colors.white, strokeWidth: 2),
+                      )
+                    : const Text(
+                        'Continuer',
+                        style: TextStyle(fontSize: 16),
+                      ),
+              ),
+              const SizedBox(height: 16),
+
+              // ── Bouton retour vers l'inscription ──
+              OutlinedButton.icon(
+                onPressed: () {
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(
+                        builder: (_) => const HealingAppScreen()),
+                    (route) => false,
+                  );
+                },
+                icon: const Icon(Icons.arrow_back, color: Colors.green),
+                label: const Text(
+                  'Retour à la page d\'inscription',
+                  style: TextStyle(color: Colors.green, fontSize: 15),
+                ),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  side: const BorderSide(color: Colors.green),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
 // Page dynamique – Questionnaire
 // ─────────────────────────────────────────────
 
@@ -301,9 +461,32 @@ class QuestionnaireDynamiquePage extends StatefulWidget {
 
 class _QuestionnaireDynamiquePageState
     extends State<QuestionnaireDynamiquePage> {
+  // Stocke toutes les réponses en mémoire avant soumission
   final Map<int, String> _answers = {};
+  // Contrôleurs pour les champs de texte libre
+  final Map<int, TextEditingController> _textControllers = {};
   bool _isSubmitting = false;
-  bool _isFetchingAnswers = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialiser un contrôleur pour chaque question ouverte
+    for (int i = 0; i < widget.questions.length; i++) {
+      final options =
+          List<String>.from(widget.questions[i]['options'] ?? []);
+      if (options.isEmpty) {
+        _textControllers[i] = TextEditingController();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    for (final controller in _textControllers.values) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
 
   // ── Affichage d'un SnackBar coloré ──
   void _showSnackBar(String message,
@@ -321,59 +504,18 @@ class _QuestionnaireDynamiquePageState
   }
 
   // ────────────────────────────────────────────────────────────
-  // ÉTAPE 3 : POST – Enregistrer UNE réponse individuelle
-  // ────────────────────────────────────────────────────────────
-  Future<void> _postSingleAnswer(int index, String answer) async {
-    final authService = AuthenticationService();
-    final question = widget.questions[index];
-
-    final result = await authService.postAnswer(
-      questionId: question['id'],
-      answer: answer,
-      token: widget.token,
-    );
-
-    if (result['success'] == true) {
-      debugPrint('Réponse Q${index + 1} enregistrée : ${result['message']}');
-    } else {
-      _showSnackBar(
-        result['message'] ?? 'Réponse ${index + 1} non sauvegardée.',
-        color: Colors.orange,
-        duration: const Duration(seconds: 2),
-      );
-    }
-  }
-
-  // ────────────────────────────────────────────────────────────
-  // ÉTAPE 4 : GET – Récupérer toutes les réponses enregistrées
-  // ────────────────────────────────────────────────────────────
-  Future<List<Map<String, dynamic>>?> _fetchAllAnswers() async {
-    setState(() => _isFetchingAnswers = true);
-
-    final authService = AuthenticationService();
-    final result = await authService.fetchAnswers(token: widget.token);
-
-    setState(() => _isFetchingAnswers = false);
-
-    if (result['success'] == true) {
-      final answers =
-          List<Map<String, dynamic>>.from(result['answers'] ?? []);
-      debugPrint(
-          '${answers.length} réponse(s) récupérée(s) : ${result['message']}');
-      return answers;
-    } else {
-      _showSnackBar(
-        result['message'] ?? 'Impossible de récupérer les réponses.',
-        color: Colors.red,
-      );
-      return null;
-    }
-  }
-
-  // ────────────────────────────────────────────────────────────
-  // Soumission finale : GET les réponses puis POST au backend
+  // Soumission finale : POST chaque réponse au backend
   // ────────────────────────────────────────────────────────────
   Future<void> _submitAnswers() async {
+    // Synchroniser les réponses libres depuis les contrôleurs
+    for (final entry in _textControllers.entries) {
+      final text = entry.value.text.trim();
+      if (text.isNotEmpty) {
+        _answers[entry.key] = text;
+      }
+    }
+
+    // Vérifier que toutes les questions ont une réponse
     if (_answers.length < widget.questions.length) {
       _showSnackBar(
         'Veuillez répondre à toutes les questions avant de soumettre.',
@@ -384,47 +526,40 @@ class _QuestionnaireDynamiquePageState
 
     setState(() => _isSubmitting = true);
 
-    try {
-      // GET : récupération des réponses sauvegardées
-      final fetchedAnswers = await _fetchAllAnswers();
+    final authService = AuthenticationService();
+    int successCount = 0;
+    bool hasError = false;
 
-      if (fetchedAnswers == null) {
-        setState(() => _isSubmitting = false);
-        return;
-      }
+    // POST chaque réponse individuellement
+    for (int i = 0; i < widget.questions.length; i++) {
+      final question = widget.questions[i];
+      final answer = _answers[i] ?? '';
 
-      _showSnackBar(
-        '${fetchedAnswers.length} réponse(s) récupérée(s), envoi en cours…',
-        color: Colors.blue,
-        duration: const Duration(seconds: 2),
-      );
-
-      // POST final : soumission au backend
-      final authService = AuthenticationService();
-      final result = await authService.submitAnswers(
-        answers: fetchedAnswers,
+      final result = await authService.postAnswer(
+        questionId: question['id'],
+        answer: answer,
         token: widget.token,
       );
 
-      setState(() => _isSubmitting = false);
-
       if (result['success'] == true) {
-        _showSnackBar(
-          result['message'] ?? 'Réponses envoyées avec succès !',
-          color: Colors.green,
-        );
-        // TODO : naviguer vers la prochaine étape
+        successCount++;
       } else {
-        _showSnackBar(
-          result['message'] ?? 'Erreur lors de l\'envoi des réponses.',
-          color: Colors.red,
-        );
+        hasError = true;
+        debugPrint('Erreur réponse Q${i + 1} : ${result['message']}');
       }
-    } catch (e) {
-      setState(() => _isSubmitting = false);
-      debugPrint('Exception _submitAnswers: $e');
+    }
+
+    setState(() => _isSubmitting = false);
+
+    if (!hasError) {
       _showSnackBar(
-        'Erreur réseau. Vérifiez votre connexion et réessayez.',
+        '$successCount réponse(s) envoyée(s) avec succès !',
+        color: Colors.green,
+      );
+      // TODO : naviguer vers la prochaine étape
+    } else {
+      _showSnackBar(
+        'Certaines réponses n\'ont pas pu être envoyées. Veuillez réessayer.',
         color: Colors.red,
       );
     }
@@ -456,6 +591,12 @@ class _QuestionnaireDynamiquePageState
                     fontSize: 20, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
+              const SizedBox(height: 8),
+              Text(
+                'Répondez à toutes les questions puis cliquez sur "Soumettre".',
+                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 24),
 
               // ── Liste des questions ──
@@ -477,10 +618,30 @@ class _QuestionnaireDynamiquePageState
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          '${index + 1}. $questionText',
-                          style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w600),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Indicateur de complétion de la question
+                            Container(
+                              margin: const EdgeInsets.only(top: 2, right: 8),
+                              width: 10,
+                              height: 10,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: _answers.containsKey(index)
+                                    ? Colors.green
+                                    : Colors.grey[300],
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                '${index + 1}. $questionText',
+                                style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 12),
 
@@ -491,28 +652,35 @@ class _QuestionnaireDynamiquePageState
                                 value: option,
                                 groupValue: _answers[index],
                                 activeColor: Colors.green,
-                                onChanged: (value) {
-                                  setState(() => _answers[index] = value!);
-                                  _postSingleAnswer(index, value!);
-                                },
+                                onChanged: _isSubmitting
+                                    ? null
+                                    : (value) {
+                                        setState(
+                                            () => _answers[index] = value!);
+                                      },
                               ))
                         // Réponse libre
                         else
                           TextField(
+                            controller: _textControllers[index],
+                            enabled: !_isSubmitting,
                             decoration: const InputDecoration(
                               hintText: 'Votre réponse…',
                               border: OutlineInputBorder(),
                               focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.green),
+                                borderSide:
+                                    BorderSide(color: Colors.green),
                               ),
                             ),
-                            onChanged: (value) =>
-                                setState(() => _answers[index] = value),
-                            onEditingComplete: () {
-                              final ans = _answers[index];
-                              if (ans != null && ans.isNotEmpty) {
-                                _postSingleAnswer(index, ans);
-                              }
+                            onChanged: (value) {
+                              // Mise à jour en mémoire uniquement, pas d'envoi réseau
+                              setState(() {
+                                if (value.trim().isNotEmpty) {
+                                  _answers[index] = value.trim();
+                                } else {
+                                  _answers.remove(index);
+                                }
+                              });
                             },
                           ),
                       ],
@@ -521,32 +689,27 @@ class _QuestionnaireDynamiquePageState
                 );
               }),
 
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
 
-              // Indicateur de récupération
-              if (_isFetchingAnswers)
-                const Padding(
-                  padding: EdgeInsets.only(bottom: 12),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height: 16,
-                        width: 16,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.blue),
-                      ),
-                      SizedBox(width: 8),
-                      Text('Récupération des réponses…',
-                          style: TextStyle(color: Colors.blue)),
-                    ],
+              // ── Compteur de progression ──
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Text(
+                  '${_answers.length} / ${widget.questions.length} question(s) répondue(s)',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: _answers.length == widget.questions.length
+                        ? Colors.green
+                        : Colors.grey[600],
+                    fontWeight: FontWeight.w500,
                   ),
+                  textAlign: TextAlign.center,
                 ),
+              ),
 
+              // ── Bouton Soumettre ──
               ElevatedButton(
-                onPressed: (_isSubmitting || _isFetchingAnswers)
-                    ? null
-                    : _submitAnswers,
+                onPressed: _isSubmitting ? null : _submitAnswers,
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
                   backgroundColor: Colors.green,
@@ -554,7 +717,7 @@ class _QuestionnaireDynamiquePageState
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
                 ),
-                child: (_isSubmitting || _isFetchingAnswers)
+                child: _isSubmitting
                     ? const SizedBox(
                         height: 20,
                         width: 20,
@@ -589,19 +752,11 @@ class AuthenticationService {
   // ════════════════════════════════════════════════════════════════════════
   // MÉTHODE 1 – POST
   // Associer le type d'obésité sélectionné à l'utilisateur connecté
-  //
-  // URL : https://healing-nutrition-plan.pixeluxt.com/api/obesity/assign-type
-  //
-  // Body envoyé :
-  //   {
-  //     "type_maladie_chronique": "obésité modérée" | "obésité sévère" | "obésité morbide"
-  //   }
   // ════════════════════════════════════════════════════════════════════════
   Future<Map<String, dynamic>> sendObesityChoice(
     String obesityType, {
     String? token,
   }) async {
-    // ✦ URL de l'endpoint
     const String url =
         'https://healing-nutrition-plan.pixeluxt.com/api/user-infos/maladie-chronique';
 
@@ -612,13 +767,10 @@ class AuthenticationService {
         body: jsonEncode({'type_maladie_chronique': obesityType}),
       );
 
-      debugPrint('[POST sendObesityChoice] $url');
-      debugPrint('Status : ${response.statusCode} | Body : ${response.body}');
-
+      debugPrint('[POST sendObesityChoice] Status : ${response.statusCode}');
       final decoded = jsonDecode(response.body) as Map<String, dynamic>;
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
-        // ✅ Succès
         return {
           'success': true,
           'message': decoded['message'] ??
@@ -626,7 +778,6 @@ class AuthenticationService {
           'data': decoded['data'],
         };
       } else {
-        // ❌ Erreur serveur
         return {
           'success': false,
           'message': decoded['message'] ??
@@ -644,18 +795,12 @@ class AuthenticationService {
 
   // ════════════════════════════════════════════════════════════════════════
   // MÉTHODE 2 – GET
-  // Récupérer la liste des questions liées au type d'obésité de l'utilisateur
-  //
-  // URL : https://healing-nutrition-plan.pixeluxt.com/api/questions/by-type?type=<obesityType>
-  //
-  // Paramètre query :
-  //   type = "obésité modérée" | "obésité sévère" | "obésité morbide" (encodé URI)
+  // Récupérer la liste des questions liées au type d'obésité
   // ════════════════════════════════════════════════════════════════════════
   Future<Map<String, dynamic>> fetchQuestions(
     String obesityType, {
     String? token,
   }) async {
-    // ✦ URL de l'endpoint (paramètre type encodé dynamiquement)
     final String url =
         'https://healing-nutrition-plan.pixeluxt.com/api/user-infos/get-user-questions?type=${Uri.encodeComponent(obesityType)}';
 
@@ -665,20 +810,16 @@ class AuthenticationService {
         headers: _headers(token),
       );
 
-      debugPrint('[GET fetchQuestions] $url');
-      debugPrint('Status : ${response.statusCode} | Body : ${response.body}');
-
+      debugPrint('[GET fetchQuestions] Status : ${response.statusCode}');
       final decoded = jsonDecode(response.body) as Map<String, dynamic>;
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
-        // ✅ Succès
         return {
           'success': true,
           'message': decoded['message'] ?? 'Questions chargées avec succès !',
           'questions': decoded['data'] ?? decoded['questions'] ?? [],
         };
       } else {
-        // ❌ Erreur serveur
         return {
           'success': false,
           'message': decoded['message'] ??
@@ -697,22 +838,12 @@ class AuthenticationService {
   // ════════════════════════════════════════════════════════════════════════
   // MÉTHODE 3 – POST
   // Enregistrer la réponse de l'utilisateur à une question
-  // (fonctionne pour les questions à choix multiples ET les questions ouvertes)
-  //
-  // URL : https://healing-nutrition-plan.pixeluxt.com/api/answers/store
-  //
-  // Body envoyé :
-  //   {
-  //     "question_id": 1,
-  //     "answer": "Réponse choisie ou saisie"
-  //   }
   // ════════════════════════════════════════════════════════════════════════
   Future<Map<String, dynamic>> postAnswer({
     required dynamic questionId,
     required String answer,
     String? token,
   }) async {
-    // ✦ URL de l'endpoint
     const String url =
         'https://healing-nutrition-plan.pixeluxt.com/api/user-infos/set-user-answer';
 
@@ -726,20 +857,16 @@ class AuthenticationService {
         }),
       );
 
-      debugPrint('[POST postAnswer] $url');
-      debugPrint('Status : ${response.statusCode} | Body : ${response.body}');
-
+      debugPrint('[POST postAnswer] Status : ${response.statusCode}');
       final decoded = jsonDecode(response.body) as Map<String, dynamic>;
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
-        // ✅ Succès
         return {
           'success': true,
           'message': decoded['message'] ?? 'Réponse enregistrée avec succès !',
           'data': decoded['data'],
         };
       } else {
-        // ❌ Erreur serveur
         return {
           'success': false,
           'message': decoded['message'] ??
@@ -748,108 +875,6 @@ class AuthenticationService {
       }
     } catch (e) {
       debugPrint('[POST postAnswer] Exception : $e');
-      return {
-        'success': false,
-        'message': 'Erreur réseau. Veuillez vérifier votre connexion.',
-      };
-    }
-  }
-
-  // ════════════════════════════════════════════════════════════════════════
-  // MÉTHODE 4 – GET
-  // Récupérer la liste complète des réponses enregistrées par l'utilisateur
-  // Ces réponses sont ensuite transmises à submitAnswers pour soumission finale
-  //
-  // URL : https://healing-nutrition-plan.pixeluxt.com/api/answers/user-list
-  // ════════════════════════════════════════════════════════════════════════
-  Future<Map<String, dynamic>> fetchAnswers({String? token}) async {
-    // ✦ URL de l'endpoint
-    const String url =
-        'https://healing-nutrition-plan.pixeluxt.com/api/user-infos/get-user-answers';
-
-    try {
-      final response = await http.get(
-        Uri.parse(url),
-        headers: _headers(token),
-      );
-
-      debugPrint('[GET fetchAnswers] $url');
-      debugPrint('Status : ${response.statusCode} | Body : ${response.body}');
-
-      final decoded = jsonDecode(response.body) as Map<String, dynamic>;
-
-      if (response.statusCode >= 200 && response.statusCode < 300) {
-        // ✅ Succès
-        return {
-          'success': true,
-          'message': decoded['message'] ?? 'Réponses récupérées avec succès !',
-          'answers': decoded['data'] ?? decoded['answers'] ?? [],
-        };
-      } else {
-        // ❌ Erreur serveur
-        return {
-          'success': false,
-          'message': decoded['message'] ??
-              'Erreur ${response.statusCode} : impossible de récupérer les réponses.',
-        };
-      }
-    } catch (e) {
-      debugPrint('[GET fetchAnswers] Exception : $e');
-      return {
-        'success': false,
-        'message': 'Erreur réseau. Veuillez vérifier votre connexion.',
-      };
-    }
-  }
-
-  // ════════════════════════════════════════════════════════════════════════
-  // MÉTHODE 5 – POST (soumission finale)
-  // Envoyer la liste complète des réponses récupérées au backend
-  //
-  // URL : https://healing-nutrition-plan.pixeluxt.com/api/answers/submit
-  //
-  // Body envoyé :
-  //   {
-  //     "answers": [ { "question_id": 1, "answer": "..." }, ... ]
-  //   }
-  // ════════════════════════════════════════════════════════════════════════
-  Future<Map<String, dynamic>> submitAnswers({
-    required List<Map<String, dynamic>> answers,
-    String? token,
-  }) async {
-    // ✦ URL de l'endpoint
-    const String url =
-        'https://healing-nutrition-plan.pixeluxt.com/api/answers/submit';
-
-    try {
-      final response = await http.post(
-        Uri.parse(url),
-        headers: _headers(token),
-        body: jsonEncode({'answers': answers}),
-      );
-
-      debugPrint('[POST submitAnswers] $url');
-      debugPrint('Status : ${response.statusCode} | Body : ${response.body}');
-
-      final decoded = jsonDecode(response.body) as Map<String, dynamic>;
-
-      if (response.statusCode >= 200 && response.statusCode < 300) {
-        // ✅ Succès
-        return {
-          'success': true,
-          'message': decoded['message'] ?? 'Réponses envoyées avec succès !',
-          'data': decoded['data'],
-        };
-      } else {
-        // ❌ Erreur serveur
-        return {
-          'success': false,
-          'message': decoded['message'] ??
-              'Erreur ${response.statusCode} : impossible d\'envoyer les réponses.',
-        };
-      }
-    } catch (e) {
-      debugPrint('[POST submitAnswers] Exception : $e');
       return {
         'success': false,
         'message': 'Erreur réseau. Veuillez vérifier votre connexion.',

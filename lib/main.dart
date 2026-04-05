@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 //import 'package:flutter_application_1/authentificate/auth_service.dart';
 import 'package:flutter_application_1/models/user_model.dart';
-import 'package:flutter_application_1/questions_screen/questionnaire_classe1.dart';
-import 'package:flutter_application_1/questions_screen/questionnaire_classe3.dart';
-import 'package:flutter_application_1/questions_screen/questionnaire_classe5.dart';
 import 'package:flutter_application_1/screens/password_modify.dart';
 import 'package:flutter_application_1/screens/reset_password_screen.dart';
 import 'package:flutter_application_1/screens/verify_code_screen.dart';
@@ -55,9 +52,6 @@ class MyApp extends StatelessWidget {
         '/personal_info2': (context) => const PersonalInfo2Screen(), 
         '/personal_info3': (context) => const PersonalInfo3Screen(), 
         '/personal_info4': (context) => const PersonalInfo4Screen(), 
-        '/questionnaire_classe1': (context) => const QuestionnaireClasse1(),
-        '/questionnaire_classe3': (context) => const QuestionnaireClasse3(),    
-        '/questionnaire_classe5': (context) => const QuestionnaireClasse5(), 
         '/password_modify': (context) => const PasswordModify(), 
         '/verify_code_screen': (context) => VerifyCodeScreen(), 
         '/reset_password_screen': (context) => const ResetPasswordScreen(), 
