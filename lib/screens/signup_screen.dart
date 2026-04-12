@@ -16,10 +16,10 @@ class SignUpScreen extends StatelessWidget {
               Navigator.pop(context); // Retour à l'écran précédent
             },
           ),
-          title: Text('S\'inscrire'), 
+          title: const Text('S\'inscrire'), 
         ),
         body: Padding(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
@@ -30,13 +30,6 @@ class SignUpScreen extends StatelessWidget {
               ),
               const SizedBox(height: 40),
               ElevatedButton(
-                child: const Text(
-                  'Continuer',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                  ),
-                ),
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -47,7 +40,14 @@ class SignUpScreen extends StatelessWidget {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green, // Couleur du bouton
-                  minimumSize: Size(double.infinity, 50), // Bouton pleine largeur
+                  minimumSize: const Size(double.infinity, 50), // Bouton pleine largeur
+                ),
+                child: const Text(
+                  'Continuer',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                  ),
                 ),
               ),
               // Spacer(), // Espace pour pousser le texte en bas

@@ -23,7 +23,7 @@ class ObjectiveScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 40), // Espace ajouté après la barre d'application
+            const SizedBox(height: 40), // Espace ajouté après la barre d'application
             // Texte principal centré
             const Text(
               'Super ! Vous venez de franchir une étape importante de votre parcours.',
@@ -34,7 +34,7 @@ class ObjectiveScreen extends StatelessWidget {
               ),
               textAlign: TextAlign.center, // Alignement du texte au centre
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // Texte secondaire
             const Text(
               'Saviez-vous l\'importance de la connaissance des informations personnelles ?\n'
@@ -44,7 +44,7 @@ class ObjectiveScreen extends StatelessWidget {
                 fontSize: 16,
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // Troisième texte
             const Text(
               'Nous avons besoin de recueillir vos informations personnelles afin de vous accompagner dans la personnalisation de votre plan nutritionnel. Cela nous permettra de mieux comprendre votre situation et de vous proposer des conseils nutritionnels pertinents et spécifiques à vos objectifs.\n',
@@ -53,7 +53,7 @@ class ObjectiveScreen extends StatelessWidget {
                 fontSize: 16,
               ),
             ),
-            SizedBox(height: 10), // Espace entre les deux parties du texte
+            const SizedBox(height: 10), // Espace entre les deux parties du texte
             // Texte centré
             const Center(
               child: Text(
@@ -64,7 +64,7 @@ class ObjectiveScreen extends StatelessWidget {
                 ),
               ),
             ),
-            Spacer(),
+            const Spacer(),
             // Bouton "Suivant"
             Center(
               child: ElevatedButton(

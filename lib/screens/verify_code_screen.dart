@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class VerifyCodeScreen extends StatefulWidget {
+  const VerifyCodeScreen({super.key});
+
   @override
   _VerifyCodeScreenState createState() => _VerifyCodeScreenState();
 }
