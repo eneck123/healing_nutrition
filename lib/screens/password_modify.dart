@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -65,7 +65,7 @@ class _PasswordModifyState extends State<PasswordModify> {
         if (response.statusCode == 200) {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => VerifyCodeScreen()),
+            MaterialPageRoute(builder: (context) => const VerifyCodeScreen()),
           );
         } else {
           _showErrorDialog(decodedBody['message'] ?? 'Erreur lors de l\'envoi. Veuillez réessayer');

@@ -53,7 +53,7 @@ class MyApp extends StatelessWidget {
         '/personal_info3': (context) => const PersonalInfo3Screen(), 
         '/personal_info4': (context) => const PersonalInfo4Screen(), 
         '/password_modify': (context) => const PasswordModify(), 
-        '/verify_code_screen': (context) => VerifyCodeScreen(), 
+        '/verify_code_screen': (context) => const VerifyCodeScreen(), 
         '/reset_password_screen': (context) => const ResetPasswordScreen(), 
 
 
