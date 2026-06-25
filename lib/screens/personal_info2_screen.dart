@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'personal_info3_screen.dart';
 import '../models/user_model.dart';
-
-
 
 class PersonalInfo2Screen extends StatefulWidget {
   const PersonalInfo2Screen({super.key});
@@ -16,6 +15,19 @@ class _PersonalInfo2ScreenState extends State<PersonalInfo2Screen> {
   final TextEditingController _tourDeTailleController = TextEditingController();
   final TextEditingController _tourDeHancheController = TextEditingController();
   final TextEditingController _tourDuCouController = TextEditingController();
+
+  Future<void> _openYoutubeVideo(String url) async {
+    final Uri uri = Uri.parse(url);
+
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+    } else {
+      _showErrorDialog('Impossible d\'ouvrir la vidéo.');
+    }
+  }
 
   void _showErrorDialog(String message) {
     showDialog(
@@ -59,7 +71,8 @@ class _PersonalInfo2ScreenState extends State<PersonalInfo2Screen> {
       if (missingFields.length == 1) {
         errorMessage = 'Veuillez entrer votre ${missingFields[0]}.';
       } else {
-        errorMessage = 'Veuillez entrer votre ${missingFields.sublist(0, missingFields.length - 1).join(', ')} et ${missingFields.last}.';
+        errorMessage =
+            'Veuillez entrer votre ${missingFields.sublist(0, missingFields.length - 1).join(', ')} et ${missingFields.last}.';
       }
       _showErrorDialog(errorMessage);
       // Retourner faux si des champs sont manquants
@@ -102,14 +115,30 @@ class _PersonalInfo2ScreenState extends State<PersonalInfo2Screen> {
               controller: _tourDeTailleController,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Tour de Taille (en cm entier ou décimal: 12.09 )',
+                labelText: 'Tour de Taille en cm ( entier ou décimal: 12.09 )',
               ),
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 8.0),
-            const Text(
-              'Le tour de taille est la mesure autour de l’abdomen à l’endroit le plus étroit, souvent juste au-dessus du nombril. Utilisez un ruban à mesurer souple pour cette mesure.',
-              style: TextStyle(fontSize: 14.0, color: Colors.grey),
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                const Expanded(
+                  child: Text(
+                    'Le tour de taille est la mesure autour de l’abdomen à l’endroit le plus étroit, souvent juste au-dessus du nombril. Utilisez un ruban à mesurer souple pour cette mesure.',
+                    style: TextStyle(fontSize: 14.0, color: Colors.grey),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.info_outline, color: Colors.blue),
+                  tooltip: 'Voir la vidéo',
+                  onPressed: () {
+                    _openYoutubeVideo(
+                      'https://www.youtube.com/results?search_query=comment+mesurer+tour+de+taille+francais',
+                    );
+                  },
+                ),
+              ],
             ),
             const SizedBox(height: 27.0),
 
@@ -123,14 +152,30 @@ class _PersonalInfo2ScreenState extends State<PersonalInfo2Screen> {
               controller: _tourDeHancheController,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Tour de Hanche (en cm entier ou décimal: 12.09)',
+                labelText: 'Tour de Hanche en cm ( entier ou décimal: 12.09)',
               ),
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 8.0),
-            const Text(
-              'Le tour de hanche est la circonférence mesurée autour des hanches à leur point le plus large. Utilisez un ruban à mesurer souple pour cette mesure.',
-              style: TextStyle(fontSize: 14.0, color: Colors.grey),
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                const Expanded(
+                  child: Text(
+                    'Le tour de hanche est la circonférence mesurée autour des hanches à leur point le plus large. Utilisez un ruban à mesurer souple pour cette mesure.',
+                    style: TextStyle(fontSize: 14.0, color: Colors.grey),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.info_outline, color: Colors.blue),
+                  tooltip: 'Voir la vidéo',
+                  onPressed: () {
+                    _openYoutubeVideo(
+                      'https://www.youtube.com/results?search_query=comment+mesurer+tour+de+hanche+francais',
+                    );
+                  },
+                ),
+              ],
             ),
             const SizedBox(height: 27.0),
 
@@ -144,14 +189,30 @@ class _PersonalInfo2ScreenState extends State<PersonalInfo2Screen> {
               controller: _tourDuCouController,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Tour du Cou (en cm entier ou décimal: 12.09)',
+                labelText: 'Tour du Cou en cm ( entier ou décimal: 12.09)',
               ),
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 8.0),
-            const Text(
-              'Le tour du cou est la circonférence mesurée juste au-dessus de la pomme d’Adam. Utilisez un ruban à mesurer souple pour cette mesure.',
-              style: TextStyle(fontSize: 14.0, color: Colors.grey),
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                const Expanded(
+                  child: Text(
+                    'Le tour du cou est la circonférence mesurée juste au-dessus de la pomme d’Adam. Utilisez un ruban à mesurer souple pour cette mesure.',
+                    style: TextStyle(fontSize: 14.0, color: Colors.grey),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.info_outline, color: Colors.blue),
+                  tooltip: 'Voir la vidéo',
+                  onPressed: () {
+                    _openYoutubeVideo(
+                      'https://www.youtube.com/results?search_query=comment+mesurer+tour+du+cou+francais',
+                    );
+                  },
+                ),
+              ],
             ),
             const SizedBox(height: 100.0),
           ],
@@ -170,14 +231,16 @@ class _PersonalInfo2ScreenState extends State<PersonalInfo2Screen> {
               );
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const PersonalInfo3Screen()),
+                MaterialPageRoute(
+                    builder: (context) => const PersonalInfo3Screen()),
               );
             }
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.green,
             minimumSize: const Size(double.infinity, 50),
-            textStyle: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+            textStyle:
+                const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
           ),
           child: const Text(
             'Suivant',

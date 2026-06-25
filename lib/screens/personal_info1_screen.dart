@@ -43,7 +43,7 @@ class _PersonalInfo1ScreenState extends State<PersonalInfo1Screen> {
     }
     if (_ageController.text.isEmpty ||
         int.tryParse(_ageController.text) == null ||
-        int.parse(_ageController.text) < 16) {
+        int.parse(_ageController.text) < 18) {
       _missingFields.add('âge (doit être au moins de 18 ans)');
     }
     if (_poidsController.text.isEmpty) {
@@ -213,7 +213,7 @@ class _PersonalInfo1ScreenState extends State<PersonalInfo1Screen> {
                     labelText: 'Sexe',
                     prefixIcon: Icon(Icons.wc),
                   ),
-                  items: ['H', 'F'].map((String value) {
+                  items: ['Homme', 'Femme'].map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Text(value),
