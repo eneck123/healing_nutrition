@@ -5,8 +5,6 @@ import 'package:provider/provider.dart';
 import 'personal_info2_screen.dart';
 import '../models/user_model.dart';
 
-
-
 class PersonalInfo1Screen extends StatefulWidget {
   const PersonalInfo1Screen({super.key});
 
@@ -43,7 +41,9 @@ class _PersonalInfo1ScreenState extends State<PersonalInfo1Screen> {
     if (_prenomController.text.isEmpty) {
       _missingFields.add('prénom');
     }
-    if (_ageController.text.isEmpty || int.tryParse(_ageController.text) == null || int.parse(_ageController.text) < 16) {
+    if (_ageController.text.isEmpty ||
+        int.tryParse(_ageController.text) == null ||
+        int.parse(_ageController.text) < 16) {
       _missingFields.add('âge (doit être au moins de 18 ans)');
     }
     if (_poidsController.text.isEmpty) {
@@ -63,9 +63,11 @@ class _PersonalInfo1ScreenState extends State<PersonalInfo1Screen> {
       if (_missingFields.length == 1) {
         errorMessage = 'Veuillez entrer votre ${_missingFields[0]}.';
       } else if (_missingFields.length == 2) {
-        errorMessage = 'Veuillez entrer votre ${_missingFields[0]} et ${_missingFields[1]}.';
+        errorMessage =
+            'Veuillez entrer votre ${_missingFields[0]} et ${_missingFields[1]}.';
       } else {
-        errorMessage = 'Veuillez entrer votre ${_missingFields.sublist(0, _missingFields.length - 1).join(', ')} et ${_missingFields.last}.';
+        errorMessage =
+            'Veuillez entrer votre ${_missingFields.sublist(0, _missingFields.length - 1).join(', ')} et ${_missingFields.last}.';
       }
     } else {
       errorMessage = 'Veuillez entrer vos informations personnelles.';
@@ -121,7 +123,8 @@ class _PersonalInfo1ScreenState extends State<PersonalInfo1Screen> {
       // Démarrer un nouveau timer
       _tailleTimer = Timer(const Duration(seconds: 5), () {
         if (int.tryParse(value) == null) {
-          _showInfoBubble('Veuillez indiquer une valeur correcte pour la taille');
+          _showInfoBubble(
+              'Veuillez indiquer une valeur correcte pour la taille');
         }
       });
     } else if (value.length > 3) {
@@ -155,7 +158,6 @@ class _PersonalInfo1ScreenState extends State<PersonalInfo1Screen> {
                   style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 24.0),
-
                 const Text(
                   'Quel est votre nom ?',
                   style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
@@ -170,7 +172,6 @@ class _PersonalInfo1ScreenState extends State<PersonalInfo1Screen> {
                   ),
                 ),
                 const SizedBox(height: 27.0),
-
                 const Text(
                   'Quel est votre prénom ?',
                   style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
@@ -185,7 +186,6 @@ class _PersonalInfo1ScreenState extends State<PersonalInfo1Screen> {
                   ),
                 ),
                 const SizedBox(height: 27.0),
-
                 const Text(
                   'Quel est votre âge ?',
                   style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
@@ -201,7 +201,6 @@ class _PersonalInfo1ScreenState extends State<PersonalInfo1Screen> {
                   onChanged: _onAgeChanged,
                 ),
                 const SizedBox(height: 27.0),
-
                 const Text(
                   'Quel est votre sexe ?',
                   style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
@@ -214,7 +213,7 @@ class _PersonalInfo1ScreenState extends State<PersonalInfo1Screen> {
                     labelText: 'Sexe',
                     prefixIcon: Icon(Icons.wc),
                   ),
-                  items: ['Homme', 'Femme'].map((String value) {
+                  items: ['H', 'F'].map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Text(value),
@@ -227,7 +226,6 @@ class _PersonalInfo1ScreenState extends State<PersonalInfo1Screen> {
                   },
                 ),
                 const SizedBox(height: 27.0),
-
                 const Text(
                   'Combien pesez-vous ?',
                   style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
@@ -242,7 +240,6 @@ class _PersonalInfo1ScreenState extends State<PersonalInfo1Screen> {
                   keyboardType: TextInputType.number,
                 ),
                 const SizedBox(height: 27.0),
-
                 const Text(
                   'Combien mesurez-vous ?',
                   style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
@@ -256,12 +253,12 @@ class _PersonalInfo1ScreenState extends State<PersonalInfo1Screen> {
                   ),
                   keyboardType: TextInputType.number,
                   maxLength: 3,
-                  buildCounter: (BuildContext context, {int? currentLength, int? maxLength, bool? isFocused}) {
+                  buildCounter: (BuildContext context,
+                      {int? currentLength, int? maxLength, bool? isFocused}) {
                     return null;
                   },
                   onChanged: _onTailleChanged,
                 ),
-
                 const SizedBox(height: 100.0),
               ],
             ),
@@ -284,7 +281,8 @@ class _PersonalInfo1ScreenState extends State<PersonalInfo1Screen> {
                     );
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const PersonalInfo2Screen()),
+                      MaterialPageRoute(
+                          builder: (context) => const PersonalInfo2Screen()),
                     );
                   } else {
                     _showErrorDialog();
@@ -294,8 +292,10 @@ class _PersonalInfo1ScreenState extends State<PersonalInfo1Screen> {
                   backgroundColor: Colors.green,
                   foregroundColor: Colors.white,
                   minimumSize: const Size(double.infinity, 50),
-                  padding: const EdgeInsets.symmetric(horizontal: 60.0, vertical: 18.0),
-                  textStyle: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 60.0, vertical: 18.0),
+                  textStyle: const TextStyle(
+                      fontSize: 16.0, fontWeight: FontWeight.bold),
                 ),
                 child: const Text('Suivant'),
               ),
